@@ -27,6 +27,27 @@ describe('Class', function() {
             expect(robot.tellName()).toBe('Optimus Prime');
         });
 
+        describe('macros', function() {
+            it('should not implement macros as property', function() {
+                var Robot = Class.create();
+
+                var Autobot = Class.create({
+                    Extends: Robot
+                });
+
+                expect(new Autobot().Extends).toBe(undefined);
+            });
+
+            it('should not modify given properties object', function() {
+                var Robot = Class.create();
+                var properties = {Extends: Robot};
+
+                var Autobot = Class.create(properties);
+
+                expect(properties.Extends).toNotBe(undefined);
+            });
+        });
+
         describe('inheritance', function() {
             it('should extends given klass', function() {
                 var Robot = Class.create();
@@ -36,7 +57,6 @@ describe('Class', function() {
 
                 var autobot = new Autobot();
                 expect(autobot instanceof Robot).toBe(true);
-                expect(autobot.Extends).toBe(undefined);
             });
 
             it('should not call super class initialize function when creating sub class', function() {
