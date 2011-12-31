@@ -1,25 +1,34 @@
 (function() {
     var macros = {
-        processors: ['Extends'],
+        macros: ['Extend', 'Include'],
 
         process: function(klass, properties) {
-            this.processors.forEach(function(processor) {
-                this[processor](klass, properties);
+            this.macros.forEach(function(macro) {
+                if (!properties[macro]) return;
+
+                var params = properties[macro];
+                delete properties[macro];
+
+                this[macro](klass, params);
             }, this);
         },
 
-        Extends: function(klass, properties) {
-            if (!properties.Extends) return;
-
-            var superClass = properties.Extends;
-            delete properties.Extends;
-
+        Extend: function(klass, superClass) {
             try {
                 superClass.__prototyping__ = true;
                 klass.prototype = new superClass();
             } finally {
                 delete superClass.__prototyping__;
             }
+        },
+
+        Include: function(klass, module) {
+            if(Object.isArray(module)) {
+                module.flatten().forEach(function(moduleToInclude) { this.Include(klass, moduleToInclude); }, this);
+            }
+
+            module = Object.isFunction(module) ? module.prototype : module;
+            Object.merge(klass.prototype, module);
         }
     };
 
@@ -36,6 +45,10 @@
             Object.merge(klass.prototype, properties);
 
             return klass;
+        },
+
+        include: function(klass, module) {
+            macros.Include(klass, module);
         }
     };
 })();

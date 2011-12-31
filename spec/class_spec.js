@@ -32,27 +32,27 @@ describe('Class', function() {
                 var Robot = Class.create();
 
                 var Autobot = Class.create({
-                    Extends: Robot
+                    Extend: Robot
                 });
 
-                expect(new Autobot().Extends).toBe(undefined);
+                expect(new Autobot().Extend).toBe(undefined);
             });
 
             it('should not modify given properties object', function() {
                 var Robot = Class.create();
-                var properties = {Extends: Robot};
+                var properties = {Extend: Robot};
 
                 var Autobot = Class.create(properties);
 
-                expect(properties.Extends).toNotBe(undefined);
+                expect(properties.Extend).toNotBe(undefined);
             });
         });
 
-        describe('inheritance', function() {
-            it('should extends given klass', function() {
+        describe('Extend', function() {
+            it('should extend given klass', function() {
                 var Robot = Class.create();
                 var Autobot = Class.create({
-                    Extends: Robot
+                    Extend: Robot
                 });
 
                 var autobot = new Autobot();
@@ -68,21 +68,81 @@ describe('Class', function() {
                 });
 
                 var Autobot = Class.create({
-                    Extends: Robot
+                    Extend: Robot
                 });
 
                 expect(initializeCalled).toBe(false);
             });
 
-            it('should overwrite super class property when there is same name property', function() {
+            it('should overwrite extended property with given property', function() {
                 var Robot = Class.create({name:'robot'});
 
                 var Autobot = Class.create({
                     name: 'autobot',
-                    Extends: Robot
+                    Extend: Robot
                 });
 
                 expect(new Autobot().name).toBe('autobot');
+            });
+        });
+
+        describe('Include', function() {
+            it('should include given klass', function() {
+                var Transformable = Class.create({tranform: function() {}});
+
+                var Autobot = Class.create({
+                    Include: Transformable
+                });
+
+                expect(new Autobot().tranform).toNotBe(undefined);
+            });
+
+            it('should include given object', function() {
+                var Transformable = {tranform: function() {}};
+
+                var Autobot = Class.create({
+                    Include: Transformable
+                });
+
+                expect(new Autobot().tranform).toNotBe(undefined);
+            });
+
+            it('should include each element in given array', function() {
+                var Transformable = Class.create({tranform: function() {}});
+                var Good = {campagin: 'good'};
+
+                var Autobot = Class.create({
+                    Include: [Transformable, Good]
+                });
+
+                var autobot = new Autobot();
+                expect(autobot.tranform).toNotBe(undefined);
+                expect(autobot.campagin).toBe('good');
+            });
+
+            it('should overwrite included property with given property', function() {
+                var Transformable = Class.create({name:'transformer'});
+                var Autobot = Class.create({
+                    Include: Transformable,
+                    name: 'autobot'
+                });
+
+                expect(new Autobot().name).toBe('autobot');
+            });
+
+            it('should overwrite extended properties with included properties', function() {
+                var Robot = Class.create({name:'robot'});
+                var Transformable = Class.create({
+                    name: 'transformer',
+                    tranform: function(){}
+                });
+
+                var Autobot = Class.create({
+                    Extend: Robot,
+                    Include: Transformable
+                });
+
+                expect(new Autobot().name).toBe('transformer');
             });
         });
     });
