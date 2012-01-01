@@ -1,4 +1,6 @@
 describe('Class', function() {
+    var Class = choc.Class;
+
     describe('create', function() {
         it('should create function with given properties as prototype', function() {
             var Robot = Class.create({

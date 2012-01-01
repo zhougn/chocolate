@@ -1,4 +1,6 @@
-(function() {
+(function(global) {
+    var choc = global.choc = global.choc || {};
+
     var macros = {
         macros: ['Extend', 'Include'],
 
@@ -32,7 +34,7 @@
         }
     };
 
-    this.Class = {
+    choc.Class = {
         create: function(properties) {
             var klass = function() {
                 if (klass.__prototyping__) return;
@@ -51,4 +53,4 @@
             macros.Include(klass, module);
         }
     };
-})();
+})(this);
