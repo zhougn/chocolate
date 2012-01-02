@@ -25,7 +25,7 @@
         },
 
         Include: function(klass, module) {
-            if(Object.isArray(module)) {
+            if (Object.isArray(module)) {
                 module.flatten().forEach(function(moduleToInclude) { this.Include(klass, moduleToInclude); }, this);
             }
 
@@ -34,9 +34,19 @@
         }
     };
 
+    var reset = function(object) {
+        for (var key in object) {
+            var value = object[key];
+            if (Object.isObject(value) || Object.isArray(value)) {
+                object[key] = Object.clone(value, true);
+            }
+        }
+    };
+
     choc.Class = {
         create: function(properties) {
             var klass = function() {
+                reset(this);
                 if (klass.__prototyping__) return;
                 if (this.initialize) return this.initialize.apply(this, arguments);
             };

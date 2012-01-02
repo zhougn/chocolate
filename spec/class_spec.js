@@ -29,6 +29,18 @@ describe('Class', function() {
             expect(robot.tellName()).toBe('Optimus Prime');
         });
 
+        it('should clone object and array fields when creating instance', function() {
+            var Robot = Class.create({
+                arrayField: [],
+                objectField: {}
+            });
+
+            var robot = new Robot();
+
+            expect(robot.arrayField).toNotBe(Robot.prototype.arrayField);
+            expect(robot.objectField).toNotBe(Robot.prototype.objectField);
+        });
+
         describe('macros', function() {
             it('should not implement macros as property', function() {
                 var Robot = Class.create();
