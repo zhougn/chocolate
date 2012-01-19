@@ -2,8 +2,7 @@
     var choc = global.choc = global.choc || {};
 
     var macros = {
-        macros: ['Extend', 'Include'],
-
+        macros: ['Include'],
         process: function(klass, properties) {
             this.macros.forEach(function(macro) {
                 if (!properties[macro]) return;
@@ -13,15 +12,6 @@
 
                 this[macro](klass, params);
             }, this);
-        },
-
-        Extend: function(klass, superClass) {
-            try {
-                superClass.__prototyping__ = true;
-                klass.prototype = new superClass();
-            } finally {
-                delete superClass.__prototyping__;
-            }
         },
 
         Include: function(klass, module) {
@@ -34,7 +24,7 @@
         }
     };
 
-    var reset = function(object) {
+    var resetFields = function(object) {
         for (var key in object) {
             var value = object[key];
             if (Object.isObject(value) || Object.isArray(value)) {
@@ -43,24 +33,39 @@
         }
     };
 
-    choc.Class = {
-        create: function(properties) {
-            var klass = function() {
-                reset(this);
-                if (klass.__prototyping__) return;
-                if (this.initialize) return this.initialize.apply(this, arguments);
-            };
-            if (!properties) return klass;
+    var klassMethods = {
+        extend: function(properties) {
+            var klass = createKlass();
 
-            properties = Object.clone(properties);
-            macros.process(klass, properties);
-            Object.merge(klass.prototype, properties);
+            this.__prototyping__ = true;
+            klass.prototype = new this();
+            delete this.__prototyping__;
 
-            return klass;
-        },
-
-        include: function(klass, module) {
-            macros.Include(klass, module);
+            return include(klass, properties);
         }
+    };
+
+    var createKlass = function() {
+        var klass = function() {
+            resetFields(this);
+            if (klass.__prototyping__) return;
+            if (this.initialize) return this.initialize.apply(this, arguments);
+        };
+        Object.merge(klass, klassMethods);
+        return klass;
+    };
+
+    var include = function(klass, properties) {
+        if (!properties) return klass;
+
+        properties = Object.clone(properties);
+        macros.process(klass, properties);
+        Object.merge(klass.prototype, properties);
+
+        return klass;
+    };
+
+    choc.klass = function(properties) {
+        return include(createKlass(), properties);
     };
 })(this);
