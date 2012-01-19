@@ -1,5 +1,5 @@
 (function() {
-    choc.Eventable = choc.Class.create({
+    choc.Eventable = choc.klass({
         _events: {},
 
         on: function(type, fn) {

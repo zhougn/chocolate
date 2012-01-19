@@ -1,5 +1,5 @@
 describe('Eventable', function() {
-    var Robot = choc.Class.create({
+    var Robot = choc.klass({
         Include: choc.Eventable
     });
     var robot;
@@ -11,9 +11,9 @@ describe('Eventable', function() {
         it('should trigger event handler with arguments', function() {
             robot.name = 'hello';
             robot.charge = function() { this.trigger('charge', ['30%']); };
-
             var percentage = '';
             robot.on('charge', function(arg) { percentage = arg; });
+
             robot.charge();
 
             expect(percentage).toBe('30%');
@@ -21,9 +21,9 @@ describe('Eventable', function() {
 
         it('should trigger event handler with self as binding scope', function() {
             robot.charge = function() { this.trigger('charge'); };
-
             var scope;
             robot.on('charge', function(arg) { scope = this; });
+
             robot.charge();
 
             expect(scope).toBe(robot);
@@ -58,8 +58,8 @@ describe('Eventable', function() {
                     isMoving = true;
                 }
             });
-            robot.charge().move();
 
+            robot.charge().move();
             expect(isCharging).toBe(true);
             expect(isMoving).toBe(true);
         });

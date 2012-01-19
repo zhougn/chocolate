@@ -1,14 +1,14 @@
 (function(global) {
     var choc = global.choc = global.choc || {};
 
-    var resetFields = function(object) {
+    function resetFields(object) {
         for (var key in object) {
             var value = object[key];
             if (Object.isObject(value) || Object.isArray(value)) {
                 object[key] = Object.clone(value, true);
             }
         }
-    };
+    }
 
     var klassMethods = {
         extend: function(properties) {
@@ -26,7 +26,7 @@
         }
     };
 
-    var createKlass = function() {
+    function createKlass() {
         var klass = function() {
             resetFields(this);
             if (klass.__prototyping__) return;
@@ -34,9 +34,9 @@
         };
         Object.merge(klass, klassMethods);
         return klass;
-    };
+    }
 
-    var include = function(klass, module) {
+    function include(klass, module) {
         if (!module) return klass;
 
         if (Object.isArray(module)) {
@@ -49,29 +49,29 @@
         Object.merge(klass.prototype, nonMacroProperties(properties));
 
         return klass;
-    };
+    }
 
-    var processMacros = function(klass, macros) {
+    function processMacros(klass, macros) {
         Object.each(macros, function(key, value) {
             macrosProcessers[key](klass, value);
         });
-    };
+    }
 
-    var nonMacroProperties = function(properties) {
+    function nonMacroProperties(properties) {
         var result = {};
         for (var key in properties) {
             if (!macrosProcessers[key]) result[key] = properties[key];
         }
         return result;
-    };
+    }
 
-    var macroProperties = function(properties) {
+    function macroProperties(properties) {
         var result = {};
         for (var key in properties) {
             if (macrosProcessers[key]) result[key] = properties[key];
         }
         return result;
-    };
+    }
 
     var macrosProcessers = {
         Include: include
