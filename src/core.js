@@ -1,29 +1,6 @@
 (function(global) {
     var choc = global.choc = global.choc || {};
 
-    var macros = {
-        macros: ['Include'],
-        process: function(klass, properties) {
-            this.macros.forEach(function(macro) {
-                if (!properties[macro]) return;
-
-                var params = properties[macro];
-                delete properties[macro];
-
-                this[macro](klass, params);
-            }, this);
-        },
-
-        Include: function(klass, module) {
-            if (Object.isArray(module)) {
-                module.flatten().forEach(function(moduleToInclude) { this.Include(klass, moduleToInclude); }, this);
-            }
-
-            module = Object.isFunction(module) ? module.prototype : module;
-            Object.merge(klass.prototype, module);
-        }
-    };
-
     var resetFields = function(object) {
         for (var key in object) {
             var value = object[key];
@@ -42,6 +19,10 @@
             delete this.__prototyping__;
 
             return include(klass, properties);
+        },
+
+        include: function(properties) {
+            return include(this, properties);
         }
     };
 
@@ -55,14 +36,45 @@
         return klass;
     };
 
-    var include = function(klass, properties) {
-        if (!properties) return klass;
+    var include = function(klass, module) {
+        if (!module) return klass;
 
-        properties = Object.clone(properties);
-        macros.process(klass, properties);
-        Object.merge(klass.prototype, properties);
+        if (Object.isArray(module)) {
+            module.flatten().forEach(function(moduleToInclude) { include(klass, moduleToInclude); });
+        }
+
+        var properties = Object.isFunction(module) ? module.prototype : module;
+
+        processMacros(klass, macroProperties(properties));
+        Object.merge(klass.prototype, nonMacroProperties(properties));
 
         return klass;
+    };
+
+    var processMacros = function(klass, macros) {
+        Object.each(macros, function(key, value) {
+            macrosProcessers[key](klass, value);
+        });
+    };
+
+    var nonMacroProperties = function(properties) {
+        var result = {};
+        for (var key in properties) {
+            if (!macrosProcessers[key]) result[key] = properties[key];
+        }
+        return result;
+    };
+
+    var macroProperties = function(properties) {
+        var result = {};
+        for (var key in properties) {
+            if (macrosProcessers[key]) result[key] = properties[key];
+        }
+        return result;
+    };
+
+    var macrosProcessers = {
+        Include: include
     };
 
     choc.klass = function(properties) {

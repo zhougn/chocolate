@@ -72,80 +72,89 @@ describe('klass', function() {
         });
     });
 
-    describe('Include', function() {
-        it('should include given klass', function() {
-            var Transformable = choc.klass({tranform: function() {}});
+    describe('klass include', function() {
+        it('should include modules to self', function() {
+            var Robot = choc.klass();
 
-            var Autobot = choc.klass({
-                Include: Transformable
-            });
+            Robot.include({name: 'robot'});
 
-            expect(new Autobot().tranform).toNotBe(undefined);
-        });
-
-        it('should include given object', function() {
-            var Transformable = {tranform: function() {}};
-
-            var Autobot = choc.klass({
-                Include: Transformable
-            });
-
-            expect(new Autobot().tranform).toNotBe(undefined);
-        });
-
-        it('should include each element in given array', function() {
-            var Transformable = choc.klass({tranform: function() {}});
-            var Good = {campagin: 'good'};
-
-            var Autobot = choc.klass({
-                Include: [Transformable, Good]
-            });
-
-            var autobot = new Autobot();
-            expect(autobot.tranform).toNotBe(undefined);
-            expect(autobot.campagin).toBe('good');
-        });
-
-        it('should overwrite included property with given property', function() {
-            var Transformable = choc.klass({name:'transformer'});
-            var Autobot = choc.klass({
-                Include: Transformable,
-                name: 'autobot'
-            });
-
-            expect(new Autobot().name).toBe('autobot');
-        });
-
-        it('should overwrite extended properties with included properties', function() {
-            var Robot = choc.klass({name:'robot'});
-            var Transformable = choc.klass({
-                name: 'transformer',
-                tranform: function(){}
-            });
-
-            var Autobot = choc.klass({
-                Extend: Robot,
-                Include: Transformable
-            });
-
-            expect(new Autobot().name).toBe('transformer');
+            expect(new Robot().name).toBe('robot');
         });
     });
 
-    describe('macros', function() {
-        it('should not implement macros as property', function() {
-            var Autobot = choc.klass({Include: {}});
 
-            expect(new Autobot().Include).toBe(undefined);
+    describe('macros', function() {
+        describe('basic', function() {
+            it('should not implement macros as property', function() {
+                var Autobot = choc.klass({Include: {}});
+
+                expect(new Autobot().Include).toBe(undefined);
+            });
+
+            it('should not modify given properties object', function() {
+                var Robot = choc.klass();
+                var properties = {Extend: Robot};
+
+                var Autobot = choc.klass(properties);
+
+                expect(properties.Extend).toNotBe(undefined);
+            });
         });
 
-        it('should not modify given properties object', function() {
-            var Robot = choc.klass();
-            var properties = {Extend: Robot};
+        describe('Include', function() {
+            it('should include given klass', function() {
+                var Transformable = choc.klass({tranform: function() {}});
 
-            var Autobot = choc.klass(properties);
+                var Autobot = choc.klass({
+                    Include: Transformable
+                });
 
-            expect(properties.Extend).toNotBe(undefined);
+                expect(new Autobot().tranform).toNotBe(undefined);
+            });
+
+            it('should include given plain object', function() {
+                var Transformable = {tranform: function() {}};
+
+                var Autobot = choc.klass({
+                    Include: Transformable
+                });
+
+                expect(new Autobot().tranform).toNotBe(undefined);
+            });
+
+            it('should include given instance object', function() {
+                var Transformable = choc.klass({tranform: function() {}});
+
+                var Autobot = choc.klass({
+                    Include: new Transformable()
+                });
+
+                expect(new Autobot().tranform).toNotBe(undefined);
+            });
+
+            it('should include each element in given array', function() {
+                var Transformable = choc.klass({tranform: function() {}});
+                var Good = {campagin: 'good'};
+
+                var Autobot = choc.klass({
+                    Include: [Transformable, Good]
+                });
+
+                var autobot = new Autobot();
+                expect(autobot.tranform).toNotBe(undefined);
+                expect(autobot.campagin).toBe('good');
+            });
+
+            it('should overwrite included property with given property', function() {
+                var Transformable = choc.klass({name:'transformer'});
+
+                var Autobot = choc.klass({
+                    Include: Transformable,
+                    name: 'autobot'
+                });
+
+                expect(new Autobot().name).toBe('autobot');
+            });
         });
     });
 });
