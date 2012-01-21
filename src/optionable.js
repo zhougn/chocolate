@@ -1,3 +1,6 @@
+/**
+ * @depend core.js
+ */
 (function() {
     choc.Optionable = choc.klass({
         initOptions: function(options) {

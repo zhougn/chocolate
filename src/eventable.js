@@ -1,3 +1,6 @@
+/**
+ * @depend core.js
+ */
 (function() {
     choc.Eventable = choc.klass({
         _events: {},
