@@ -4,7 +4,8 @@
 (function() {
     choc.Optionable = choc.klass({
         initOptions: function(options) {
-            this.options = Object.merge({}, options);
+            this.options = Object.merge({}, this.defaultOptions);
+            this.options = Object.merge(this.options, options);
 
             if (!this.on) return;
 

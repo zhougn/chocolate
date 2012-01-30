@@ -16,6 +16,26 @@ describe("Optionable", function() {
         expect(robot.options.enableTransforming).toBe(true);
     });
 
+    it("should support default options", function() {
+        Robot.include({
+            defaultOptions: {rechargable: true}
+        });
+
+        var robot = new Robot();
+
+        expect(robot.options.rechargable).toBe(true);
+    });
+
+    it("should overwrite same key default options with given options", function() {
+        Robot.include({
+            defaultOptions: {rechargable: true}
+        });
+
+        var robot = new Robot({rechargable: false});
+
+        expect(robot.options.rechargable).toBe(false);
+    });
+
     it("should treat onXxx function option as event binding when Eventable is included", function() {
         var isCharging = false;
         var robot = new Robot({onCharge: function() {isCharging = true;}});
