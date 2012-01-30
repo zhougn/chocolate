@@ -98,4 +98,18 @@
             });
         });
     });
+
+    choc.macro.add('Delegate', function(klass, mappings) {
+        var prototype = klass.prototype;
+        Object.each(mappings, function(sourceObjName, delegators) {
+            Array.create(delegators).each(function(delegator) {
+                prototype[delegator] = function() {
+                    var sourceObj = this[sourceObjName];
+                    source = sourceObj[delegator];
+
+                    return Object.isFunction(source) ? source.apply(sourceObj, arguments) : source;
+                };
+            });
+        });
+    });
 })(this);

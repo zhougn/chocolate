@@ -171,5 +171,32 @@ describe('klass', function() {
                 expect(robot.deform).toBe(robot.transform);
             });
         });
+
+        describe("Delegate", function() {
+            it("should create delegate function for non function property", function() {
+                var currentCharge = '30%';
+                var isCharging = false;
+
+                var Robot = choc.klass({
+                    battery: {currentCharge: currentCharge, isCharging: isCharging},
+                    Delegate: {'battery': ['isCharging', 'currentCharge']}
+                });
+
+                var robot = new Robot();
+                expect(robot.currentCharge()).toBe(currentCharge);
+                expect(robot.isCharging()).toBe(isCharging);
+            });
+
+            it("should create delegate function for function property", function() {
+                var Robot = choc.klass({
+                    battery: {remainingChargeTime: 0, charge: function(fixedPeriod) { this.remainingChargeTime = fixedPeriod; }},
+                    Delegate: {'battery': 'charge'}
+                });
+
+                var robot = new Robot();
+                robot.charge(60);
+                expect(robot.battery.remainingChargeTime).toBe(60);
+            });
+        });
     });
 });
