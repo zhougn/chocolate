@@ -103,37 +103,37 @@ describe('klass', function() {
 
         describe('Include', function() {
             it('should include given klass', function() {
-                var Transformable = choc.klass({tranform: function() {}});
+                var Transformable = choc.klass({transform: function() {}});
 
                 var Autobot = choc.klass({
                     Include: Transformable
                 });
 
-                expect(new Autobot().tranform).toNotBe(undefined);
+                expect(new Autobot().transform).toNotBe(undefined);
             });
 
             it('should include given plain object', function() {
-                var Transformable = {tranform: function() {}};
+                var Transformable = {transform: function() {}};
 
                 var Autobot = choc.klass({
                     Include: Transformable
                 });
 
-                expect(new Autobot().tranform).toNotBe(undefined);
+                expect(new Autobot().transform).toNotBe(undefined);
             });
 
             it('should include given instance object', function() {
-                var Transformable = choc.klass({tranform: function() {}});
+                var Transformable = choc.klass({transform: function() {}});
 
                 var Autobot = choc.klass({
                     Include: new Transformable()
                 });
 
-                expect(new Autobot().tranform).toNotBe(undefined);
+                expect(new Autobot().transform).toNotBe(undefined);
             });
 
             it('should include each element in given array', function() {
-                var Transformable = choc.klass({tranform: function() {}});
+                var Transformable = choc.klass({transform: function() {}});
                 var Good = {campagin: 'good'};
 
                 var Autobot = choc.klass({
@@ -141,7 +141,7 @@ describe('klass', function() {
                 });
 
                 var autobot = new Autobot();
-                expect(autobot.tranform).toNotBe(undefined);
+                expect(autobot.transform).toNotBe(undefined);
                 expect(autobot.campagin).toBe('good');
             });
 
@@ -154,6 +154,21 @@ describe('klass', function() {
                 });
 
                 expect(new Autobot().name).toBe('autobot');
+            });
+        });
+
+        describe("Alias", function() {
+            it("should create alias properties by given mappings", function() {
+                var Autobot = choc.klass({
+                    Alias: {'name': 'fullname', 'transform': ['shift', 'deform']},
+                    name: 'autobot',
+                    transform: function() { }
+                });
+
+                var robot = new Autobot();
+                expect(robot.fullname).toBe(robot.name);
+                expect(robot.shift).toBe(robot.transform);
+                expect(robot.deform).toBe(robot.transform);
             });
         });
     });

@@ -88,3 +88,14 @@
 
     macro.add('Include', include, 'pre');
 })(this);
+
+(function(global) {
+    choc.macro.add('Alias', function(klass, mappings) {
+        var prototype = klass.prototype;
+        Object.each(mappings, function(source, aliases) {
+            Array.create(aliases).each(function(alias) {
+                if (prototype[source]) prototype[alias] = prototype[source];
+            });
+        });
+    });
+})(this);
