@@ -45,39 +45,46 @@
 
         var properties = Object.isFunction(module) ? module.prototype : module;
 
-        processMacros(klass, macroProperties(properties));
-        Object.merge(klass.prototype, nonMacroProperties(properties));
+        macro.process(klass, properties, 'pre');
+        Object.merge(klass.prototype, macro.excludeMacroProperties(properties));
+        macro.process(klass, properties, 'post');
 
         return klass;
     }
 
-    function processMacros(klass, macros) {
-        Object.each(macros, function(key, value) {
-            macrosProcessers[key](klass, value);
-        });
-    }
-
-    function nonMacroProperties(properties) {
-        var result = {};
-        for (var key in properties) {
-            if (!macrosProcessers[key]) result[key] = properties[key];
-        }
-        return result;
-    }
-
-    function macroProperties(properties) {
-        var result = {};
-        for (var key in properties) {
-            if (macrosProcessers[key]) result[key] = properties[key];
-        }
-        return result;
-    }
-
-    var macrosProcessers = {
-        Include: include
-    };
-
     choc.klass = function(properties) {
         return include(createKlass(), properties);
     };
+
+    var macro = choc.macro = {
+        _allMacros: {pre: {}, post: {}},
+
+        getMacros: function(scope) {
+            return scope === 'pre' ? this._allMacros.pre : this._allMacros.post;
+        },
+
+        add: function(name, handler, scope) {
+            this.getMacros(scope)[name] = handler;
+        },
+
+        process: function(klass, properties, scope) {
+            Object.each(this.getMacros(scope), function(name, handler) {
+                if (properties[name]) handler(klass, properties[name]);
+            });
+        },
+
+        excludeMacroProperties: function(properties) {
+            var result = {};
+            for (var key in properties) {
+                if (!this.hasMacro(key)) result[key] = properties[key];
+            }
+            return result;
+        },
+
+        hasMacro: function(name) {
+            return !!(this._allMacros.pre[name] || this._allMacros.post[name]);
+        }
+    };
+
+    macro.add('Include', include, 'pre');
 })(this);
